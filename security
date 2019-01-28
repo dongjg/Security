@@ -61,8 +61,47 @@
     #sealert -l 1592dd6b-44b9-4d60-b777-0a405bdf48ec
     #semanage port -a -t http_port_t -p tcp 8090
 
+7、MD5完整性检验
+  #md5sum SuperSOS.iso
+  
+8、GPG加/解密
+  -GnuPG,GNU Privacy Guard
+  -数据加密、数字签名工具软件
+  -支持算法：
+           公钥：RSA、ELG、DSA
+           对称加密：3DES、CAST5、BLOWFISH、AES、AES256，...
+           散列：MD5、SHA1‘...SHA256，SHA512
+9、GPG对称加/解密
+  -用法
+      加密操作：--symmetric 或 -c
+      解密操作：--decrypt 或-d
+      
+      #gpg -c clear.txt     //设置密码
+      #file clear.txt*
+        a.txt:     ASCII text
+        a.txt.gpg: data         //加密后的文件
+      #gpg -d clear.txt.gpg >dclear.txt       //根据提示输解密密码
 
-7、
+10、GPG非对称加/解密
+    前期准备：
+        -创建：gen-key
+        -导出：--export、--armor或-a
+        -导入：--import
+        #gpg --gen-key        //设置用户信息、私钥口令
+        #gpg --list-keys      //查看公钥环
+        #gpg -a --export userb > /tem/userb.pub
+    加密：
+        用法：
+            加密操作：--encrypt 或 -e
+            指定目标用户：--recipient 或-r
+            解密操作：--decryprt 或 -d
+         #echo "I love you">love.txt
+         #gpg -e -r usera love.txt
+         #gpg -d love.txt.gpg >love.txt
+11、GPG签名机制
+12、AIDE入侵检测
+13、扫描及抓包
+  
 
 
 
