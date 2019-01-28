@@ -37,7 +37,7 @@
     Connected to 192.168.4.50 (192.168.4.50).
     220 (vsFTPd 3.0.2)
     Name (192.168.4.50:root): ftp
-    331 Please specify the password.
+    331 Please specify the password. 
     Password:
     230 Login successful.
     Remote system type is UNIX.
@@ -64,6 +64,17 @@
 7、MD5完整性检验
   #md5sum SuperSOS.iso
   
+  常见的加密算法
+    -对称加密
+      -DES
+      -AES
+    -非对称加密
+      -RSA
+      -DSA
+    -hash散列技术，用于信息摘要
+      -MD5
+      -SHA
+  
 8、GPG加/解密
   -GnuPG,GNU Privacy Guard
   -数据加密、数字签名工具软件
@@ -72,36 +83,152 @@
            对称加密：3DES、CAST5、BLOWFISH、AES、AES256，...
            散列：MD5、SHA1‘...SHA256，SHA512
 9、GPG对称加/解密
-  -用法
+  -用法：
       加密操作：--symmetric 或 -c
       解密操作：--decrypt 或-d
-      
-      #gpg -c clear.txt     //设置密码
-      #file clear.txt*
+      #yum -y install gnupg2          //安装软件
+      #gpg --version                  //查看版本
+      #gpg -c a.txt                   //设置密码
+      #file a.txt*
         a.txt:     ASCII text
-        a.txt.gpg: data         //加密后的文件
-      #gpg -d clear.txt.gpg >dclear.txt       //根据提示输解密密码
+        a.txt.gpg: data                       //加密后的文件
+      #gpg -d a.txt.gpg >da.txt               //根据提示输解密密码
 
 10、GPG非对称加/解密
     前期准备：
         -创建：gen-key
+        #gpg --gen-key
+          gpg: 已创建目录‘/root/.gnupg’
+          gpg: 新的配置文件‘/root/.gnupg/gpg.conf’已建立
+          gpg: 警告：在‘/root/.gnupg/gpg.conf’里的选项于此次运行期间未被使用
+          gpg: 钥匙环‘/root/.gnupg/secring.gpg’已建立
+          gpg: 钥匙环‘/root/.gnupg/pubring.gpg’已建立
+          请选择您要使用的密钥种类：                       //直接回车默认（1）
+          (1) RSA and RSA (default)
+          (2) DSA and Elgamal
+          (3) DSA (仅用于签名)
+          (4) RSA (仅用于签名)
+          您的选择？ 
+          RSA 密钥长度应在 1024 位与 4096 位之间。
+          您想要用多大的密钥尺寸？(2048)                      //默认2048位
+          RSA 密钥长度应在 1024 位与 4096 位之间。
+          您想要用多大的密钥尺寸？(2048)
+          您所要求的密钥尺寸是 2048 位
+          请设定这把密钥的有效期限。
+          0 = 密钥永不过期
+          <n>  = 密钥在 n 天后过期
+          <n>w = 密钥在 n 周后过期
+          <n>m = 密钥在 n 月后过期
+          <n>y = 密钥在 n 年后过期
+          密钥的有效期限是？(0)                          //默认永不过期
+          以上正确吗？(y/n)y                            //输入y确认
+          
         -导出：--export、--armor或-a
         -导入：--import
+        
         #gpg --gen-key        //设置用户信息、私钥口令
+        
         #gpg --list-keys      //查看公钥环
-        #gpg -a --export userb > /tem/userb.pub
+        
+        #gpg -a --export userb > /tmp/userb.pub  //导出公钥
+        
+        #gpg --import /tmp/userb.pub              //导入公钥
     加密：
         用法：
             加密操作：--encrypt 或 -e
             指定目标用户：--recipient 或-r
             解密操作：--decryprt 或 -d
+                    
          #echo "I love you">love.txt
+         
          #gpg -e -r usera love.txt
+         
          #gpg -d love.txt.gpg >love.txt
+         
 11、GPG签名机制
-12、AIDE入侵检测
-13、扫描及抓包
+  -为软件包建立签名文件：
+    -分离式签名：--detach-sign 或 -b
+    
+      #gpg -b /tmp/denyhosts-2.7.tar.gz
   
+  -验证软件包签名
+    -验证签名：--verify
+    
+      #gpg --import /tmp/userb.pub        //导入官方公钥
+      #gpg --verify /tmp/denyhosts-2.7.tar.gz
+      
+12、AIDE入侵检测
+  -AIDE:即入侵检测系统
+    #yum -y install aide
+  -修改配置文件
+    #vim /etc/aide.conf
+      ...
+      @@define DBDIR /var/lib/aide            //数据库目录
+      @@define LOGDIR /var/log/aide           //日志目录
+      database=file:@@{DBDIR}/aide.db.gz      //数据库文件名字
+      以下为配置文件中希望检查的项目：
+      #p:             permissions
+      #i:             inode:
+      #n:             number of links
+      #u:             user
+      #g:             group
+      #s:             size
+      #b:             block count
+      #m:             mtime
+      #a:             atime
+      #c:             ctime
+      #S:             check for growing size
+      #acl:           Access Control Lists
+      #selinux        SELinux security context
+      #xattrs:        Extended file attributes
+      #md5:           md5 checksum
+      #sha1:          sha1 checksum
+      #sha256:        sha256 checksum
+      #sha512:        sha512 checksum
+      #rmd160:        rmd160 checksum
+      #tiger:         tiger checksum
+
+      #haval:         haval checksum (MHASH only)
+      #gost:          gost checksum (MHASH only)
+      #crc32:         crc32 checksum (MHASH only)
+      #whirlpool:     whirlpool checksum (MHASH only)
+      
+    -入侵前对数据进行校验，生成初始化数据库
+      #aide --init
+        AIDE, version 0.15.1
+        AIDE database at /var/lib/aide/aide.db.new.gz initialized.
+        
+    -备份数据库
+      #cp /var/lib/aide/aide.db.new.gz /tmp/
+      
+    -入侵后检测
+      #cd /var/lib/aide/
+      #mv aide.db.new.gz aide.db.gz
+      #aide --check                       //检查哪些数据发生变化
+
+13、扫描及抓包
+  -扫描
+    扫描方式：
+            -Scan，主动检测
+            -Sniff，被动监听/嗅探
+            -Capture，数据包捕获（抓包）
+            
+    常见的安全分析工具：
+            -扫描器：NMAP
+            -协议分析：tcpdump，WireShark
+            
+  -NMAP简介
+    用法：
+        #nmap [扫描类型] [选项] <扫描目标...>
+        常见的扫描类型：
+          - -sS     tcp syn扫描（半开）
+          - -sT     tcp连接扫描（全开）
+          - -sU     UDP扫描
+          - -sP     ICMP扫描
+          - -A      目标系统全面分析
+
+
+          
 
 
 
