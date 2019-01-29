@@ -1,0 +1,80 @@
+一、网络抓包工具
+  1、tcpdump抓包命令
+    用法： #tcpdump [选项] [过滤条件]
+    选项：
+        - -i  指定监控的网络接口
+        - -A  转换为ASCII码，以方便阅读
+        - -w  将数据包信息保存到指定文件
+        - -r  从指定文件读取数据包信息
+  2、tcpdump过滤条件
+    -类型：host,net,port,portrange
+    -方向：src,dst
+    -协议：tcp,udp,ip,wlan,arp,...
+    -多个条件组合：and,or,not
+    
+    #tcpdump                                    //默认只抓从eth0接口进出的数据包
+    #tcpdump -i enp2s0                          //指定端口抓包
+    #tcpdump -i enp2s0 -c 2                     //指定抓包次数
+    #tcpdump -i enp2s0 -c 2 -A                  //以可阅读方式显示抓包信息
+    #tcpdump -i enp2s0 -c 2 -A -w /tmp/one.cap  //存储到指定文件
+    #ls /tmp/one.cap 
+    #tcpdump -A -r /tmp/one.cap                 //读取文件内容
+    #useradd student
+    #echo 123abc | passwd --stdin student
+    #tcpdump -A -i eth0 tcp port 21 -w /tmp/a3.cap
+    #tcpdump -A -r /tmp/a3.cap | grep -i student
+    #tcpdump -A -r /tmp/a3.cap | grep -i 123abc
+    #tcpdump -A -r /tmp/a3.cap | grep -i 'user\|pass'
+二、邮件服务器
+  1、收邮件端口110
+    #yum -y install dovecot
+    #systemctl start dovecot
+  2、发邮件端口25
+    #yum -y install postfix
+    #systemctl start postfix
+  3、添加邮箱账号
+    #useradd jim
+    #echo 123 | passwd --stdin jim
+    账号：jim@localhost
+    密码：123
+  4、设置邮箱目录
+    -发邮件服务的配置文件：/etc/postfix/main.cf
+      #vim /etc/postfix/main.cf
+        ...
+        home_mailbox = Maildir/
+        ...
+      #systemctl restart postfix
+      
+    -收邮件服务配置文件目录：/etc/dovecot/conf.d/
+      #cd /etc/dovecot/conf.d/
+      #vim 10-auth.conf             //设置认证信息
+        ...
+        disable_plaintext_auth = no
+        ...
+        
+      #vim 10-mail.conf             //设置收邮件位置
+        ...
+        mail_location = maildir:~/Maildir
+        ...
+      #systemctl restart dovecot
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+三、
