@@ -1,0 +1,36 @@
+一、配置audit审计系统
+  1、安装软件包，查看配置文件（确定审计日志的位置）
+    # yum -y  install  audit                //安装软件包
+    # cat /etc/audit/auditd.conf            //查看配置文件，确定日志位置
+        log_file = /var/log/audit/audit.log                //日志文件路径
+    # systemctl start auditd                //启动服务
+    # systemctl enable auditd               //设置开机自启
+  2、配置审计规则
+    -可以使用auditctl命令控制审计系统并设置规则决定哪些行为会被记录日志。
+    -语法格式如下：
+      # auditctl  -s                        //查询状态
+      # auditctl  -l                        //查看规则
+      # auditctl  -D                        //删除所有规则
+      
+  3、定义临时文件系统规则：
+    -语法格式：auditctl  -w  path  -p  permission  -k  key_name
+      -path为需要审计的文件或目录
+      -permission权限可以是r,w,x,a(文件或目录的属性发生变化)
+      -Key_name为可选项，方便识别哪些规则生成特定的日志项
+    
+    # auditctl  -w  /etc/passwd  -p wa  -k  passwd_change
+                //设置规则所有对passwd文件的写、属性修改操作都会被记录审计日志
+                
+    # auditctl  -w  /etc/selinux/  -p wa  -k  selinux_change
+                //设置规则，监控/etc/selinux目录
+                
+    # auditctl  -w  /usr/sbin/fdisk  -p x  -k  disk_partition
+                //设置规则，监控fdisk程序
+                
+    # auditclt  -w  /etc/ssh/sshd_conf  -p warx  -k  sshd_config
+                //设置规则，监控sshd_conf文件
+                
+  4、创建永久审计规则，则需要修改规则配置文件：
+    # vim  /etc/audit/rules.d/audit.rules
+      -w /etc/passwd -p wa -k passwd_changes
+      -w /usr/sbin/fdisk -p x -k partition_disks
