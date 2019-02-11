@@ -1,0 +1,64 @@
+一、部署Zabbix监控平台
+  -准备工作：
+           -安装LNMP环境
+           -源码安装Zabbix
+           -安装监控端主机，修改基本配置
+           -初始化Zabbix监控Web页面
+           -修改PHP配置文件，满足Zabbix需求
+           -安装被监控端主机，修改基本配置
+1、安装LNMP环境
+    #yum -y install gcc pcre-devel  openssl-devel
+    # tar -xf nginx-1.12.2.tar.gz
+    # cd nginx-1.12.2
+    # ./configure --prefix=/usr/local/nginx --with-http_ssl_module
+    # make && make install
+    # yum -y install php php-mysql \
+      > mariadb mariadb-devel mariadb-server
+    # yum -y  install  php-fpm-5.4.16-42.el7.x86_64.rpm
+2、修改Nginx配置文件
+    # vim /usr/local/nginx/conf/nginx.conf
+      … …
+      http{
+      … …
+      fastcgi_buffers 8 16k;                        //缓存php生成的页面内容，8个16k
+      fastcgi_buffer_size 32k;                      //缓存php生产的头部信息
+      fastcgi_connect_timeout 300;                  //连接PHP的超时时间
+      fastcgi_send_timeout 300;                     //发送请求的超时时间
+      fastcgi_read_timeout 300;                     //读取请求的超时时间
+      location ~ \.php$ {
+                root           html;
+                fastcgi_pass   127.0.0.1:9000;
+                fastcgi_index  index.php;
+                include        fastcgi.conf;
+        }
+3、启动服务
+    # systemctl start  mariadb
+    # systemctl start  php-fpm
+    # ln -s /usr/local/nginx/sbin/nginx /sbin/nginx
+    # nginx
+    # firewall-cmd --set-default-zone=trusted
+    # setenforce 0
+4、部署监控服务器Zabbix Server
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+5、
+6、
